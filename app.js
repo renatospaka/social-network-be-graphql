@@ -41,6 +41,10 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  //graphql automatically rejects OPTIONS query
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
   next();
 }) 
 
@@ -53,7 +57,7 @@ app.use('/graphql', graphqlHTTP({
     if (!err.originalError) {
       return err;
     }
-    const data = err.originalError.data;
+    const data = err.originalError.message;
     const code = err.originalError.code || 500;
     const message = data.message || 'An error has occurred.';
     return {message: message, status: code, data: data};
