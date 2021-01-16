@@ -48,7 +48,16 @@ app.use((req, res, next) => {
 app.use('/graphql', graphqlHTTP({
   schema: graphqlSchema,
   rootValue: graphqlResolvers,
-  graphiql: true
+  graphiql: true,
+  formatError(err) {
+    if (!err.originalError) {
+      return err;
+    }
+    const data = err.originalError.data;
+    const code = err.originalError.code || 500;
+    const message = data.message || 'An error has occurred.';
+    return {message: message, status: code, data: data};
+  }
 }));
 
 //error handler
@@ -58,7 +67,8 @@ app.use((error, req, res, next) => {
   const message = error.message;
   const data = error.data
   res.status(errCode).json({ message: message, data: data })
-}) 
+});
+
 //database access
 require('dotenv').config()
 const uri = process.env.MONGODB_URI;
