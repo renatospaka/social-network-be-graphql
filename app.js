@@ -48,7 +48,7 @@ app.use((req, res, next) => {
   next();
 }) 
 
-//graphql miiddleware
+//graphql middleware
 app.use('/graphql', graphqlHTTP({
   schema: graphqlSchema,
   rootValue: graphqlResolvers,
