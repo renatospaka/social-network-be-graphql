@@ -7,6 +7,7 @@ const { graphqlHTTP } = require('express-graphql');
 
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolvers = require('./graphql/resolvers');
+const auth = require('./middleware/isAuth');
 
 const app = express();
 
@@ -47,6 +48,9 @@ app.use((req, res, next) => {
   }
   next();
 }) 
+
+//jwt middleware
+app.use(auth);
 
 //graphql middleware
 app.use('/graphql', graphqlHTTP({
