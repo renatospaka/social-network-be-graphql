@@ -4,7 +4,7 @@ module.exports = (req, res, next) => {
   const authHeader = req.get('Authorization');
   if (!authHeader) {
     req.isAuth = false;
-    req.next();
+    return next();
   }
 
   const token = authHeader.split(' ')[1];
@@ -13,12 +13,12 @@ module.exports = (req, res, next) => {
     decodedToken = jwt.verify(token, 'someSuperHugeSecretFromHeaven');
   } catch (error) {
     req.isAuth = false;
-    req.next();
+    return next();
   }
   
   if (!decodedToken) {
     req.isAuth = false;
-    req.next();
+    return next();
   }
 
   // store the user from token and move on to the next middleware.

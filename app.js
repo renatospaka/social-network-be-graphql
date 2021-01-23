@@ -7,7 +7,7 @@ const { graphqlHTTP } = require('express-graphql');
 
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolvers = require('./graphql/resolvers');
-const auth = require('./middleware/isAuth');
+const auth = require('./middleware/auth');
 
 const app = express();
 

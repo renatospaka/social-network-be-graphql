@@ -103,7 +103,7 @@ module.exports = {
       error.code = 401;
       throw error;
     }
-    
+    // create the post
     const post = new Post({
       title: postInput.title,
       content: postInput.content,
@@ -111,7 +111,10 @@ module.exports = {
       creator: user
     });
     const createdPost = await post.save();
+    
+    // add the post to the user's document
     user.posts.push(createdPost)
+    await user.save();
 
     return {
       ...createdPost._doc, 
