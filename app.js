@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs')
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -52,6 +53,25 @@ app.use((req, res, next) => {
 //jwt middleware
 app.use(auth);
 
+//store images
+app.put('/images', (req, res, next) => {
+  if (!req.isAuth) {
+    throw new Error('Not authenticated.')
+  }
+  //uses molter, defined few lines above
+  if (!req.file) {
+    return res.status(200).json({ message: 'No file provided.' });
+  }
+
+  if (req.body.oldPath) {
+    clearImage(req.body.oldPath);
+  }
+
+  return res
+    .status(201)
+    .json({ message: 'File stored.', filePath: req.file.path })
+})
+
 //graphql middleware
 app.use('/graphql', graphqlHTTP({
   schema: graphqlSchema,
@@ -86,3 +106,7 @@ mongoose.connect(uri, { useNewUrlParser:true, useUnifiedTopology: true })
   })
   .catch(err => console.log(err))
 
+const clearImage= filePath => {
+  filePath = path.join(__dirname, '..', filePath);
+  fs.unlink(filePath, err => console.log(err));
+};
