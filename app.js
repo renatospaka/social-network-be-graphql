@@ -9,6 +9,8 @@ const graphqlSchema = require('./graphql/schema');
 const graphqlResolvers = require('./graphql/resolvers');
 const auth = require('./middleware/auth');
 
+const { clearImage } = require('./util//file');
+
 const app = express();
 
 const fileStorage = multer.diskStorage({
@@ -52,6 +54,25 @@ app.use((req, res, next) => {
 //jwt middleware
 app.use(auth);
 
+//store images
+app.put('/images', (req, res, next) => {
+  if (!req.isAuth) {
+    throw new Error('Not authenticated.')
+  }
+  //uses molter, defined few lines above
+  if (!req.file) {
+    return res.status(200).json({ message: 'No file provided.' });
+  }
+
+  if (req.body.oldPath) {
+    clearImage(req.body.oldPath);
+  }
+
+  return res
+    .status(201)
+    .json({ message: 'File stored.', filePath: req.file.path })
+})
+
 //graphql middleware
 app.use('/graphql', graphqlHTTP({
   schema: graphqlSchema,
@@ -85,4 +106,5 @@ mongoose.connect(uri, { useNewUrlParser:true, useUnifiedTopology: true })
     app.listen(8091);
   })
   .catch(err => console.log(err))
+
 
