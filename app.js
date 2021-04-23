@@ -78,7 +78,7 @@ app.use('/graphql', graphqlHTTP({
   schema: graphqlSchema,
   rootValue: graphqlResolvers,
   graphiql: true,
-  formatError(err) {
+  customFormatErrorFn(err) {
     if (!err.originalError) {
       return err;
     }
